@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+import logging
 from items.item_processor import ItemProcessor
 from utilities.utility_tools import UtilityTools
 from averages.average_processor import AverageProcessor
@@ -14,7 +15,7 @@ class TFTDiscordBot:
 	match_array = None
 
 	def __init__(self):
-		print("starting up discord tft bot")
+		logging.info("starting up discord tft bot")
 		self.puuid = UtilityTools.get_puuid()
 		self.match_array = UtilityTools.get_puuid_matches(self.puuid)
 		self.start_up()

@@ -7,8 +7,8 @@ class AverageProcessor:
         query_count = 0
         rank_count = 0
         for match_id in match_array:
-            print(f'getting match data for: {match_id} query number: {str(query_count)}')
+            logging.info(f'getting match data for: {match_id} query number: {str(query_count)}')
             query_count += 1
             rank_count += UtilityTools.get_most_recent_round_data(puuid, match_id)["placement"]
 
-        print(f'player average: {str(rank_count/len(match_array))}')
+        logging.info(f'player average: {str(rank_count/len(match_array))}')
