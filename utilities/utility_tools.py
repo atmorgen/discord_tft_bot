@@ -16,7 +16,6 @@ class UtilityTools:
         )
         response = requests.get(URL)
         puuid = response.json()["puuid"]
-
         return puuid
 
     @staticmethod

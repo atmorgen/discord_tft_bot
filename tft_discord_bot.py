@@ -29,6 +29,3 @@ class TFTDiscordBot:
 				average = AverageProcessor.get_rank_average(match_array, puuid)
 				
 				await bot_logger.edit_message(f'average for {split_message[1]} is {average}')
-
-				# await message.channel.send(f'average for {split_message[1]} is {average}')
-
