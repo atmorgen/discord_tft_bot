@@ -1,10 +1,24 @@
 import logging
+import discord
 from tft_discord_bot import TFTDiscordBot
+from config import DISCORD_TOKEN
 
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.DEBUG)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
-def main():
-    TFTDiscordBot()
+logging.getLogger("discord").setLevel(logging.WARNING)
 
-if __name__ == "__main__":
-    main()
+class TFTDiscordStartup(discord.Client):
+
+    async def on_message(self, message):
+        if message.author == client.user:
+            return
+        await TFTDiscordBot.process_message(message)
+
+    async def on_ready(self):
+        print(f'{self.user} has connected to Discord!')
+
+
+
+client = TFTDiscordStartup()
+
+client.run(DISCORD_TOKEN)
