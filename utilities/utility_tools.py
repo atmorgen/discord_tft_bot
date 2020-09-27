@@ -1,6 +1,7 @@
 import time
 import requests
 import logging
+from constants import OK
 from config import API_KEY, TFT_VERSION_COMPARE
 
 
@@ -15,16 +16,17 @@ class UtilityTools:
             + API_KEY
         )
         response = requests.get(URL)
-        puuid = response.json()["puuid"]
-        return puuid
+        puuid = response.json().get("puuid", {})
+        return puuid if response.status_code == OK else None
 
     @staticmethod
-    def get_puuid_matches(puuid: str) -> None:
+    def get_puuid_matches(puuid: str, count: str) -> None:
         logging.info("getting matches for: " + puuid)
         URL = (
             "https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/"
             + puuid
-            + "/ids?count=5"
+            + "/ids?count="
+            + count
             + "&api_key="
             + API_KEY
         )
@@ -46,7 +48,6 @@ class UtilityTools:
         response = requests.get(URL)
         time.sleep(1)
         game_version = str(response.json()["info"]["game_version"])
-        print(game_version)
         game_version = float(game_version.split("/")[2].replace(">", ""))
 
         is_set_4 = game_version >= 10.19

@@ -9,7 +9,7 @@ init:
 run:
 	( \
 	. .venv/bin/activate; \
-	python3 discord-tft-bot/app.py; \
+	python3 app.py; \
 	)
 
 python-test: 
