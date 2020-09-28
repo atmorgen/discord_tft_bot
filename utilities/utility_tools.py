@@ -33,8 +33,10 @@ class UtilityTools:
         response = requests.get(URL)
         match_array = response.json()
         logging.info("Player has played: " + str(len(match_array)))
-        logging.info("most recent game id: " + match_array[0])
-
+        if len(match_array) > 0:
+            logging.info("most recent game id: " + match_array[0])
+        else:
+            logging.info("player has no matches")
         return match_array
 
     @staticmethod
@@ -56,4 +58,5 @@ class UtilityTools:
         participant_index = response.json()["metadata"]["participants"].index(puuid)
         player_data_in_game = response.json()["info"]["participants"][participant_index]
         logging.info(response)
-        return player_data_in_game if game_version >= TFT_VERSION_COMPARE else {}
+        return player_data_in_game
+       # return player_data_in_game if game_version >= TFT_VERSION_COMPARE else {}
