@@ -1,13 +1,13 @@
-import time
+import asyncio
 import requests
 import logging
-from constants import OK
+from constants import OK, RATE_LIMIT
 from config import API_KEY, TFT_VERSION_COMPARE
 
 
 class UtilityTools:
     @staticmethod
-    def get_puuid(summonerName):
+    async def get_puuid(summonerName):
         logging.info("getting player data for: " + summonerName)
         URL = (
             "https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/"
@@ -20,7 +20,7 @@ class UtilityTools:
         return puuid if response.status_code == OK else None
 
     @staticmethod
-    def get_puuid_matches(puuid: str, count: str) -> None:
+    async def get_puuid_matches(puuid: str, count: str, bot_logger) -> None:
         logging.info("getting matches for: " + puuid)
         URL = (
             "https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/"
@@ -31,6 +31,8 @@ class UtilityTools:
             + API_KEY
         )
         response = requests.get(URL)
+        if await UtilityTools.check_rate_limit(response.status_code, bot_logger):
+            return {}
         match_array = response.json()
         logging.info("Player has played: " + str(len(match_array)))
         if len(match_array) > 0:
@@ -40,23 +42,36 @@ class UtilityTools:
         return match_array
 
     @staticmethod
-    def get_most_recent_round_data(puuid, match_id: str) -> None:
+    async def get_most_recent_round_data(puuid, match_id: str, bot_logger) -> None:
         URL = (
             "https://americas.api.riotgames.com/tft/match/v1/matches/"
             + match_id
             + "?api_key="
             + API_KEY
         )
+        await asyncio.sleep(1)
         response = requests.get(URL)
-        time.sleep(1)
-        game_version = str(response.json()["info"]["game_version"])
-        game_version = float(game_version.split("/")[2].replace(">", ""))
+        if await UtilityTools.check_rate_limit(response.status_code, bot_logger):
+            return {"placement": 4}
+        else:
+            game_version = str(response.json()["info"]["game_version"])
+            game_version = float(game_version.split("/")[2].replace(">", ""))
 
-        is_set_4 = game_version >= 10.19
-        logging.info(f'Game is in set: {"4" if is_set_4 else "not 4"}')
+            is_set_4 = game_version >= 10.19
+            logging.info(f'Game is in set: {"4" if is_set_4 else "not 4"}')
 
-        participant_index = response.json()["metadata"]["participants"].index(puuid)
-        player_data_in_game = response.json()["info"]["participants"][participant_index]
-        logging.info(response)
-        return player_data_in_game
-       # return player_data_in_game if game_version >= TFT_VERSION_COMPARE else {}
+            return response.json()
+            # return player_data_in_game if game_version >= TFT_VERSION_COMPARE else {}
+
+    @staticmethod
+    def get_player_data_in_game(round_data, puuid):
+        participant_index = round_data["metadata"]["participants"].index(puuid)
+        return round_data["info"]["participants"][participant_index]
+
+
+    @staticmethod
+    async def check_rate_limit(status, bot_logger):
+        if status == RATE_LIMIT:
+            logging.info("RATE LIMIT EXCEEDED")
+            await bot_logger.i_broke_cause_rate_limit()
+        return status == RATE_LIMIT

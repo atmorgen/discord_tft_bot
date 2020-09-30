@@ -12,6 +12,10 @@ class TFTDiscordStartup(discord.Client):
     async def on_message(self, message):
         if message.author == client.user:
             return
+
+        if message.author == "Hiphopaplottamus#7024":
+            await message.channel.send("Shut up, Max")
+        
         await TFTDiscordBot.process_message(message)
 
     async def on_ready(self):

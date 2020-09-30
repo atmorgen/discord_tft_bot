@@ -4,12 +4,15 @@ from averages.average_processor import AverageProcessor
 from utilities.utility_tools import UtilityTools
 from logger.bot_logger import BotLogger
 
+class TFTDiscordBot:            
 
-class TFTDiscordBot:
     @staticmethod
     async def process_message(message):
-
+        print(message.author)
         bot_logger = BotLogger(message)
+        if message.content.lower() == "do a barrel roll!":
+            await bot_logger.do_a_barrel_roll()
+            return
 
         if str(message.channel) == "tft_bot_channel":
             if message.content == "Slave Bot, Say Hello":
@@ -23,7 +26,7 @@ class TFTDiscordBot:
                     await bot_logger.send_message("Your message doesn't make sense")
                     return
                 
-                puuid = UtilityTools.get_puuid(split_message[1])
+                puuid = await UtilityTools.get_puuid(split_message[1])
                 
                 success_response = (
                     f"processing average for {split_message[1]} over {split_message[2]} "
@@ -32,12 +35,15 @@ class TFTDiscordBot:
                 
                 fail_response = f"No player named: {split_message[1]} found"
                 
-                bot_logger.set_message(
-                    await bot_logger.send_message(
+                processing_message = await bot_logger.send_message(
                         success_response if puuid != None else fail_response
                     )
+
+                bot_logger.set_message(
+                    processing_message
                 )
-                match_array = UtilityTools.get_puuid_matches(puuid, split_message[2])
+
+                match_array = await UtilityTools.get_puuid_matches(puuid, split_message[2], bot_logger)
                 
                 if len(match_array) == 0:
                     await bot_logger.edit_message(
@@ -45,8 +51,4 @@ class TFTDiscordBot:
                     )
                     return
 
-                average = AverageProcessor.get_rank_average(match_array, puuid)
-
-                await bot_logger.edit_message(
-                    f"average for {split_message[1]} over the last {split_message[2]} games is {average}"
-                )
+                await AverageProcessor.get_rank_average(split_message[1], split_message[2], match_array, puuid, bot_logger)

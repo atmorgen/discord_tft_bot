@@ -1,2 +1,4 @@
 discord.py==1.4.1
 requests==2.24.0
+asyncio==3.4.3
+giphy_client==1.0.0
