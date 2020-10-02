@@ -31,12 +31,11 @@ class AverageProcessor:
                     "placement"
                 ]
 
-        unranked_average = str(round(unranked_placement_count/unranked_games_count,2))
-        ranked_average = str(round(ranked_placement_count/ranked_games_count,2))
-
-        total_average = str((unranked_games_count + ranked_placement_count)/len(match_array))
-        logging.info(f"player average: {total_average}")
+        unranked_average = 0 if unranked_games_count==0 else str(round(unranked_placement_count/unranked_games_count,2))
+        ranked_average = 0 if ranked_games_count==0 else str(round(ranked_placement_count/ranked_games_count,2))
         
+        logging.info(f'done processing average for {name}')
+
         await bot_logger.edit_message(
             f"""Averages for `{name}`:
             Unranked: average over `{unranked_games_count}` games is `{unranked_average}`

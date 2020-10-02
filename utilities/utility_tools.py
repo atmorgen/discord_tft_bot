@@ -17,6 +17,7 @@ class UtilityTools:
         )
         response = requests.get(URL)
         puuid = response.json().get("puuid", {})
+
         return puuid if response.status_code == OK else None
 
     @staticmethod
@@ -31,6 +32,7 @@ class UtilityTools:
             + API_KEY
         )
         response = requests.get(URL)
+
         if await UtilityTools.check_rate_limit(response.status_code, bot_logger):
             return {}
         match_array = response.json()
