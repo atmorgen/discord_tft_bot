@@ -15,6 +15,9 @@ class TFTDiscordBot:
             return
 
         if str(message.channel) == "tft_bot_channel":
+            if message.content.lower() == "i love tft_bot":
+                await bot_logger.send_message("...")
+
             if message.content == "Slave Bot, Say Hello":
                 await bot_logger.send_message("Hello!")
 
