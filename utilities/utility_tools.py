@@ -55,15 +55,8 @@ class UtilityTools:
         response = requests.get(URL)
         if await UtilityTools.check_rate_limit(response.status_code, bot_logger):
             return {"placement": 4}
-        else:
-            game_version = str(response.json()["info"]["game_version"])
-            game_version = float(game_version.split("/")[2].replace(">", ""))
 
-            is_set_4 = game_version >= 10.19
-            logging.info(f'Game is in set: {"4" if is_set_4 else "not 4"}')
-
-            return response.json()
-            # return player_data_in_game if game_version >= TFT_VERSION_COMPARE else {}
+        return response.json()
 
     @staticmethod
     def get_player_data_in_game(round_data, puuid):
